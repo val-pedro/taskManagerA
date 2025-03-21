@@ -14,7 +14,7 @@ export default props => {
 
     return(
         <View style={styles.container}>
-            <TouchableWithoutFeedback onPress={() => console.log('oi')}>
+            <TouchableWithoutFeedback onPress={() => props.onToggleTask(props.id)}>
                 <View style={styles.checkContainer}>
                     {getCheckView(props.doneAt)}
                 </View>

@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Text, View, StyleSheet, ImageBackground, TouchableOpacity, FlatList } from "react-native"
 
 import Icon from "react-native-vector-icons/FontAwesome"
@@ -8,95 +9,53 @@ import 'moment/locale/pt-br'
 import todayImage from '../../assets/imgs/today.jpg'
 import Task from "../components/Task"
 
-export default function TaskList(){
+const taskDB = [
+    {
+        id: Math.random(),
+        desc: 'Elaborar o MER do TCC',
+        estimateAt: new Date(),
+        doneAt: new Date()
+    },
+    {
+        id: Math.random(),
+        desc: 'Ajustar o FIGMA',
+        estimateAt: new Date(),
+        doneAt: new Date()
+    },
+    {
+        id: Math.random(),
+        desc: 'Desenvolver o Backend do sistema',
+        estimateAt: new Date(),
+        doneAt: null
+    }
+]
 
-    const tasks = [
-        {
-            id: Math.random(),
-            desc: 'Elaborar o MER do TCC',
-            estimateAt: new Date(),
-            doneAt: null
-        },
-        {
-            id: Math.random(),
-            desc: 'Ajustar o FIGMA',
-            estimateAt: new Date(),
-            doneAt: new Date()
-        },
-        {
-            id: Math.random(),
-            desc: 'Desenvolver o Backend do sistema',
-            estimateAt: new Date(),
-            doneAt: null
-        },
-        {
-            id: Math.random(),
-            desc: 'Desenvolver o Backend do sistema',
-            estimateAt: new Date(),
-            doneAt: new Date()
-        },
-        {
-            id: Math.random(),
-            desc: 'Desenvolver o Backend do sistema',
-            estimateAt: new Date(),
-            doneAt: null
-        },
-        {
-            id: Math.random(),
-            desc: 'Desenvolver o Backend do sistema',
-            estimateAt: new Date(),
-            doneAt: new Date()
-        },
-        {
-            id: Math.random(),
-            desc: 'Desenvolver o Backend do sistema',
-            estimateAt: new Date(),
-            doneAt: new Date()
-        },
-        {
-            id: Math.random(),
-            desc: 'Desenvolver o Backend do sistema',
-            estimateAt: new Date(),
-            doneAt: new Date()
-        },
-        {
-            id: Math.random(),
-            desc: 'Desenvolver o Backend do sistema',
-            estimateAt: new Date(),
-            doneAt: new Date()
-        },
-        {
-            id: Math.random(),
-            desc: 'Desenvolver o Backend do sistema',
-            estimateAt: new Date(),
-            doneAt: new Date()
-        },
-        {
-            id: Math.random(),
-            desc: 'Desenvolver o Backend do sistema',
-            estimateAt: new Date(),
-            doneAt: new Date()
-        },
-        {
-            id: Math.random(),
-            desc: 'Desenvolver o Backend do sistema',
-            estimateAt: new Date(),
-            doneAt: new Date()
-        }
+export default function TaskList() {
 
-    ]
+    const [tasks, setTasks] = useState([...taskDB])
 
     const userTimeZone = moment.tz.guess(); // Detecta o fuso horario do dispositivo
     const today = moment().tz('America/Sao_Paulo').locale('pt-br').format('ddd, D [de] MMMM')
     // const today = moment().locale('pt-br').format('ddd, D [de] MMMM')
 
-    return(
+    const toggleTask = taskId => {
+        const taskList = [...tasks]
+        taskList.forEach(task => {
+            if (task.id === taskId) {
+                task.doneAt = task.doneAt ? null : new Date()
+            }
+        });
+
+        setTasks(taskList)
+    }
+
+    return (
         <View style={styles.container}>
-            
+
             <ImageBackground source={todayImage} style={styles.background}>
                 <View style={styles.iconBar}>
                     <TouchableOpacity onPress={() => console.warn('oi')}>
-                        <Icon name="eye" size={20} color={'#fff'}/>
+                        <Icon name="eye" size={20} color={'#fff'} />
                     </TouchableOpacity>
                 </View>
 
@@ -107,13 +66,13 @@ export default function TaskList(){
             </ImageBackground>
 
             <View style={styles.taskList}>
-                <FlatList 
+                <FlatList
                     data={tasks}
                     keyExtractor={item => `${item.id}`}
-                    renderItem={({item}) => <Task {...item} />}
+                    renderItem={({ item }) => <Task {...item} onToggleTask={toggleTask} />}
                 />
             </View>
-            
+
             <TouchableOpacity
                 style={styles.addButton}
                 activeOpacity={0.7}
