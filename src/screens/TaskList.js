@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Text, View, StyleSheet, ImageBackground, TouchableOpacity, FlatList } from "react-native"
 
 import Icon from "react-native-vector-icons/FontAwesome"
@@ -33,10 +33,15 @@ const taskDB = [
 export default function TaskList() {
 
     const [tasks, setTasks] = useState([...taskDB])
-
+    const [showDoneTasks, setShowDoneTasks] = useState(true)
+    const [visibleTasks, setVisibleTasks] = useState([...tasks])
+    
     const userTimeZone = moment.tz.guess(); // Detecta o fuso horario do dispositivo
     const today = moment().tz('America/Sao_Paulo').locale('pt-br').format('ddd, D [de] MMMM')
-    // const today = moment().locale('pt-br').format('ddd, D [de] MMMM')
+
+    useEffect(() => {
+        filterTasks()
+    }, [showDoneTasks])
 
     const toggleTask = taskId => {
         const taskList = [...tasks]
@@ -47,6 +52,25 @@ export default function TaskList() {
         });
 
         setTasks(taskList)
+        filterTasks()
+    }
+
+    const toggleFilter = () => {
+        setShowDoneTasks(!showDoneTasks)
+    }
+
+    const filterTasks = () => {
+        let visibleTasks = null
+
+        if(showDoneTasks){
+            visibleTasks = [...tasks]
+
+        } else {
+            const pending = task => task.doneAt === null
+            visibleTasks = tasks.filter(pending)
+        }
+
+        setVisibleTasks(visibleTasks)
     }
 
     return (
@@ -54,8 +78,8 @@ export default function TaskList() {
 
             <ImageBackground source={todayImage} style={styles.background}>
                 <View style={styles.iconBar}>
-                    <TouchableOpacity onPress={() => console.warn('oi')}>
-                        <Icon name="eye" size={20} color={'#fff'} />
+                    <TouchableOpacity onPress={toggleFilter}>
+                        <Icon name={showDoneTasks ? 'eye' : 'eye-slash'} size={20} color={'#fff'} />
                     </TouchableOpacity>
                 </View>
 
@@ -67,7 +91,7 @@ export default function TaskList() {
 
             <View style={styles.taskList}>
                 <FlatList
-                    data={tasks}
+                    data={visibleTasks}
                     keyExtractor={item => `${item.id}`}
                     renderItem={({ item }) => <Task {...item} onToggleTask={toggleTask} />}
                 />
