@@ -36,7 +36,7 @@ export default function TaskList() {
     const [tasks, setTasks] = useState([...taskDB])
     const [showDoneTasks, setShowDoneTasks] = useState(true)
     const [visibleTasks, setVisibleTasks] = useState([...tasks])
-    const [showAddTask, setShowAddTask] = useState(true)
+    const [showAddTask, setShowAddTask] = useState(false)
     
     const userTimeZone = moment.tz.guess(); // Detecta o fuso horario do dispositivo
     const today = moment().tz('America/Sao_Paulo').locale('pt-br').format('ddd, D [de] MMMM')
