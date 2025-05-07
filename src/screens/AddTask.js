@@ -20,9 +20,9 @@ export default function AddTask(props) {
     const [showDatePicker, setShowDatePicker] = useState(false);
 
     const handleDateChange = (event, selectedDate) => {
-        setShowDatePicker(Platform.OS === 'ios'); // iOS mantém o picker aberto
-        if (selectedDate) {
-            setDate(selectedDate);
+        setShowDatePicker(Platform.OS === 'ios')
+        if(selectedDate){
+            setDate(selectedDate)
         }
     };
 
