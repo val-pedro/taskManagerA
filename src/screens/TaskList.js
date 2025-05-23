@@ -2,9 +2,9 @@ import { useEffect, useState } from "react"
 import { Text, View, StyleSheet, ImageBackground, TouchableOpacity, FlatList, Alert } from "react-native"
 
 import Icon from "react-native-vector-icons/FontAwesome"
-
 import moment from "moment-timezone"
 import 'moment/locale/pt-br'
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
 import todayImage from '../../assets/imgs/today.jpg'
 import Task from "../components/Task"
@@ -33,7 +33,8 @@ const taskDB = [
 
 export default function TaskList() {
 
-    const [tasks, setTasks] = useState([...taskDB])
+    // const [tasks, setTasks] = useState([...taskDB])
+    const [tasks, setTasks] = useState([])
     const [showDoneTasks, setShowDoneTasks] = useState(true)
     const [visibleTasks, setVisibleTasks] = useState([...tasks])
     const [showAddTask, setShowAddTask] = useState(false)
@@ -41,9 +42,19 @@ export default function TaskList() {
     const userTimeZone = moment.tz.guess(); // Detecta o fuso horario do dispositivo
     const today = moment().tz('America/Sao_Paulo').locale('pt-br').format('ddd, D [de] MMMM')
 
+    let cont = 0
+
     useEffect(() => {
+        console.warn(`useEffect 1 ${++cont}`)
         filterTasks()
-    }, [showDoneTasks, tasks])
+    }, [showDoneTasks])
+    
+    async function getTasks() {
+        const tasksString = await AsyncStorage.getItem('tasksState')
+        console.warn(`useEffect 3 ${tasksString}`)
+        const tasks = JSON.parse(tasksString) || taskDB
+        setTasks(tasks)
+    }
 
     const toggleTask = taskId => {
         const taskList = [...tasks]
@@ -62,6 +73,8 @@ export default function TaskList() {
     }
 
     const filterTasks = () => {
+        getTasks()
+        
         let visibleTasks = null
 
         if(showDoneTasks){
@@ -89,6 +102,10 @@ export default function TaskList() {
         })
         setTasks(tempTasks)
         setShowAddTask(false)
+
+        AsyncStorage.setItem('tasksState', JSON.stringify(tempTasks))
+
+        filterTasks()
     }
 
     const deleteTask = id => {
