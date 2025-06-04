@@ -5,7 +5,6 @@ import Icon from "react-native-vector-icons/FontAwesome"
 import moment from "moment-timezone"
 import 'moment/locale/pt-br'
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import axios from "axios"
 
 import todayImage from '../../assets/imgs/today.jpg'
 import Task from "../components/Task"
@@ -32,7 +31,7 @@ const taskDB = [
     }
 ]
 
-export default function TaskList() {
+export default function TaskListLocal() {
 
     // const [tasks, setTasks] = useState([...taskDB])
     const [tasks, setTasks] = useState([])
@@ -60,12 +59,9 @@ export default function TaskList() {
     }, [tasks])
 
     async function getTasks() {
-        try {
-            const response = await axios.get('https://67f51ca7913986b16fa349ce.mockapi.io/meditime/api/v1/tasks')
-            setTasks(response.data)
-        } catch (error) {
-            console.error('Erro ao carregar os dados', error)
-        }
+        const tasksString = await AsyncStorage.getItem('tasksState')
+        const tasks = tasksString && JSON.parse(tasksString) || taskDB
+        setTasks(tasks)
     }
     
     const toggleTask = taskId => {
